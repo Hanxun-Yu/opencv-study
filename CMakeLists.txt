@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 11)
 
 
 #根据opencv实际位置指定
-set(OpenCV_DIR "E://source//open//opencv//build_mingw//install//x64//mingw//lib")
+#set(OpenCV_DIR "E://source//open//opencv//build_mingw//install//x64//mingw//lib")
 find_package(OpenCV REQUIRED)
 
 # set(CMAKE_C_FLAGS ${CMAKE_C_FLAGS} "-msse4")

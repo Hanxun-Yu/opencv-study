@@ -9,6 +9,13 @@ cv::Mat getTestImg() {
     return cv::imread("../data/lane.jpg");
 }
 
+cv::Mat getTestImgGraySmall() {
+    auto img = getTestImg();
+    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
+    cv::resize(img, img, cv::Size(300, 300));
+    return img;
+}
+
 void cv_show(const cv::String &name, cv::InputArray mat, bool needWaitKey) {
     cv::imshow(name, mat);
     if (needWaitKey)

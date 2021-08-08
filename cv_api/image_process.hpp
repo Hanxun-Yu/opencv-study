@@ -167,36 +167,97 @@ void image_smooth() {
 
     //均值滤波 卷积后求平均数 cv::Size(3,3) 表示3x3卷积核
     cv::blur(img, img_blur, cv::Size(3, 3));
-    cv_show("blur",img_blur, false);
+    cv_show("blur", img_blur, false);
 
     //高斯滤波
-    cv::GaussianBlur(img, img_blur, cv::Size(3, 3),1);
-    cv_show("GaussianBlur",img_blur, false);
+    cv::GaussianBlur(img, img_blur, cv::Size(3, 3), 1);
+    cv_show("GaussianBlur", img_blur, false);
 
     //中值滤波
     cv::medianBlur(img, img_blur, 3);
-    cv_show("medianBlur",img_blur, false);
+    cv_show("medianBlur", img_blur, false);
 
 
-    cv_show("original",img,true);
+    cv_show("original", img, true);
 }
 
 /**
  * 腐蚀操作
+ * 类似消除毛刺
  */
 void image_erode() {
-    auto img = getTestImg();
-    cv::cvtColor(img, img, cv::COLOR_BGR2GRAY);
-    cv::resize(img, img, cv::Size(300, 300));
+    auto img = getTestImgGraySmall();
     //二值化方便腐蚀操作
     cv::Mat binary;
     cv::threshold(img, binary, 127, 255, cv::THRESH_BINARY);
 
     cv::Mat erode;
-    cv::erode(binary,erode,cv::Mat());
+    cv::erode(binary, erode, cv::Mat());
 
-    cv_show("erode",erode, false);
-    cv_show("binary",binary,true);
+    cv_show("erode", erode, false);
+    cv_show("binary", binary, true);
+}
+
+/**
+ * 膨胀操作
+ * 类似外扩
+ */
+void image_dilate() {
+    auto img = getTestImgGraySmall();
+    //二值化方便操作
+    cv::Mat binary;
+    cv::threshold(img, binary, 127, 255, cv::THRESH_BINARY);
+
+    cv::Mat dilate;
+    cv::Mat kernel = cv::Mat::ones(cv::Size(3, 3), CV_8U);
+    cv::dilate(binary, dilate, kernel, cv::Point(-1, -1), 2);
+
+
+    cv_show("dilate", dilate, false);
+    cv_show("binary", binary, true);
+}
+
+/**
+ * 开运算,闭运算
+ * 开运算：先腐蚀，再膨胀
+ * 闭运算：先膨胀，再腐蚀
+ */
+void image_morph_open_close() {
+    auto img = getTestImgGraySmall();
+    //二值化方便操作
+    cv::Mat binary;
+    cv::threshold(img, binary, 127, 255, cv::THRESH_BINARY);
+
+    cv::Mat kernel = cv::Mat::ones(cv::Size(5, 5), CV_8U);
+    cv::Mat opening;
+    //开运算
+//    cv::morphologyEx(binary, opening, cv::MORPH_OPEN, kernel);
+    //闭运算
+    cv::morphologyEx(binary, opening, cv::MORPH_CLOSE, kernel);
+
+    cv_show("binary", binary, false);
+    cv_show("opening", opening, true);
+}
+
+/**
+ * 梯度计算
+ */
+void image_gradient() {
+    auto img = getTestImgGraySmall();
+    //二值化方便腐蚀操作
+    cv::Mat binary;
+    cv::threshold(img, binary, 127, 255, cv::THRESH_BINARY);
+
+    cv::Mat dilate;
+    cv::Mat erode;
+    cv::Mat kernel = cv::Mat::ones(cv::Size(3, 3), CV_8U);
+    cv::dilate(binary, dilate, kernel, cv::Point(-1, -1), 5);
+    cv::erode(binary, erode, kernel,cv::Point(-1, -1), 5);
+
+    cv::Mat gradient;
+    cv::morphologyEx(img,gradient,cv::MORPH_GRADIENT,kernel);
+    cv_show("img", img, false);
+    cv_show("gradient", gradient, true);
 }
 
 #endif
